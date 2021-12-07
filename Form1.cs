@@ -269,8 +269,7 @@ namespace PIDMotorControl
             player.Play();
             ClearZedGraph2(); // Làm mới đồ thị graph2
             float.TryParse(textBoxSetPoint.Text, out sp);
-            string s = "S " + sp.ToString();
-            
+            string s = "S " + sp.ToString();           
             change = true;
 
             try
