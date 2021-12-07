@@ -61,11 +61,11 @@ namespace PIDMotorControl
             graph1.CurveList.Add(curve);
             graph1.CurveList.Add(curve0);
             graph1.XAxis.Scale.Min = 0;
-            graph1.XAxis.Scale.Max = 100;
-            graph1.XAxis.Scale.MinorStep = 25;
-            graph1.XAxis.Scale.MajorStep = 50;
+            graph1.XAxis.Scale.Max = 50;
+            graph1.XAxis.Scale.MinorStep = 12.5;
+            graph1.XAxis.Scale.MajorStep = 25;
             graph1.YAxis.Scale.Min = 0;
-            graph1.YAxis.Scale.Max = 150;
+            graph1.YAxis.Scale.Max = 130;
             graph1.AxisChange();
 
             GraphPane graph2 = zedGraphControl2.GraphPane;
@@ -77,11 +77,11 @@ namespace PIDMotorControl
             LineItem curve1 = new LineItem("Pusle", list1, Color.Green, SymbolType.None, 1.5f);
             graph2.CurveList.Add(curve1);
             graph2.XAxis.Scale.Min = 0;
-            graph2.XAxis.Scale.Max = 0.5;
-            graph2.XAxis.Scale.MinorStep = 0.125;
-            graph2.XAxis.Scale.MajorStep = 0.25;
+            graph2.XAxis.Scale.Max = 0.4;
+            graph2.XAxis.Scale.MinorStep = 0.1;
+            graph2.XAxis.Scale.MajorStep = 0.2;
             graph2.YAxis.Scale.Min = 0;
-            graph2.YAxis.Scale.Max = 150;
+            graph2.YAxis.Scale.Max = 130;
             graph2.AxisChange();
 
             string[] baudRate = { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
@@ -266,6 +266,7 @@ namespace PIDMotorControl
 
         private void buttonCP_Click(object sender, EventArgs e)
         {
+            Com.DiscardInBuffer();
             player.Play();
             ClearZedGraph2(); // Làm mới đồ thị graph2
             float.TryParse(textBoxSetPoint.Text, out sp);
@@ -278,7 +279,7 @@ namespace PIDMotorControl
                 Com.Write(s);
                 aTimer = new System.Windows.Forms.Timer();
                 aTimer.Tick += new EventHandler(aTimer_Tick);
-                aTimer.Interval = 10; // 10 milisecond
+                aTimer.Interval = 10; // update graph2 mỗi 1ms
                 rtime = 0;
                 aTimer.Start();               
             }
@@ -383,13 +384,13 @@ namespace PIDMotorControl
                         t.Add(rtime);
                         pu.Add(pulses);
                     }
-                    // Khi đủ 50 mẫu:
-                    if (t.Count > 50)
+                    // Khi đủ 400 mẫu:
+                    if (t.Count > 500)
                     {
                         check = true; // Dừng việc nạp buffer và bắt đầu vẽ đồ thị graph2
                     }
                 }
-                if (sample == 3)
+                if (sample == 7)
                 {
                     sreal_time++;
                     realtime = sreal_time / 10;
@@ -425,7 +426,6 @@ namespace PIDMotorControl
                         textBoxAngle.Text = "-" + angle.ToString() + " Degrees";
                     sample = 0;
                 }
-
             }
 
         }
@@ -478,7 +478,7 @@ namespace PIDMotorControl
             if (realtime > xScale.Max - xScale.MajorStep)
             {
                 xScale.Max = realtime + xScale.MajorStep;
-                xScale.Min = xScale.Max - 100;
+                xScale.Min = xScale.Max - 50;
             }
 
             // Tự động Scale theo trục y
@@ -511,10 +511,9 @@ namespace PIDMotorControl
 
             if (list1 == null)
                 return;
-            double rt = t[count] / 100;
+            double rt = t[count] / 1000;
             list1.Add(rt, pu[count]); // Thêm điểm trên đồ thị
-            count++;
-
+            
             Scale xScale = zedGraphControl2.GraphPane.XAxis.Scale;
             Scale yScale = zedGraphControl2.GraphPane.YAxis.Scale;
 
@@ -526,19 +525,20 @@ namespace PIDMotorControl
             }
 
             // Tự động Scale theo trục y
-            if (pulses > yScale.Max - yScale.MajorStep)
+            if (pu[count] > yScale.Max - yScale.MajorStep)
             {
-                yScale.Max = pulses + yScale.MajorStep;
+                yScale.Max = pu[count] + yScale.MajorStep;
             }
-            else if (pulses < yScale.Min + yScale.MajorStep)
+            else if (pu[count] < yScale.Min + yScale.MajorStep)
             {
-                yScale.Min = pulses - yScale.MajorStep;
+                yScale.Min = pu[count] - yScale.MajorStep;
             }
 
             zedGraphControl2.AxisChange();
             zedGraphControl2.Invalidate();
             zedGraphControl2.Refresh();
-            if (count == 50) // Vẽ xong đáp ứng trong 0.5s
+            count++;
+            if (count == 500) // Vẽ xong đáp ứng trong 0.5s
             {
                 t.Clear(); // Reset buffer thời gian
                 pu.Clear(); // Reset buffer xung
@@ -552,7 +552,7 @@ namespace PIDMotorControl
         {
             if (e.KeyCode == Keys.Enter)
             {
-                buttonCP_Click(sender, e);
+                buttonCP_Click(sender, e);          
             }
         }
 
@@ -592,11 +592,11 @@ namespace PIDMotorControl
             graph1.CurveList.Add(curve);
             graph1.CurveList.Add(curve0);
             graph1.XAxis.Scale.Min = 0;
-            graph1.XAxis.Scale.Max = 100;
-            graph1.XAxis.Scale.MinorStep = 25;
-            graph1.XAxis.Scale.MajorStep = 50;
+            graph1.XAxis.Scale.Max = 50;
+            graph1.XAxis.Scale.MinorStep = 12.5;
+            graph1.XAxis.Scale.MajorStep = 25;
             graph1.YAxis.Scale.Min = 0;
-            graph1.YAxis.Scale.Max = 150;
+            graph1.YAxis.Scale.Max = 130;
             graph1.AxisChange();
 
             GraphPane graph2 = zedGraphControl2.GraphPane;
@@ -612,7 +612,7 @@ namespace PIDMotorControl
             graph2.XAxis.Scale.MinorStep = 0.125;
             graph2.XAxis.Scale.MajorStep = 0.25;
             graph2.YAxis.Scale.Min = 0;
-            graph2.YAxis.Scale.Max = 150;
+            graph2.YAxis.Scale.Max = 130;
             graph2.AxisChange();
         }
 
@@ -637,7 +637,7 @@ namespace PIDMotorControl
             graph2.XAxis.Scale.MinorStep = 0.125;
             graph2.XAxis.Scale.MajorStep = 0.25;
             graph2.YAxis.Scale.Min = 0;
-            graph2.YAxis.Scale.Max = 150;
+            graph2.YAxis.Scale.Max = 130;
             graph2.AxisChange();
         }
 
@@ -651,7 +651,6 @@ namespace PIDMotorControl
             pulses = 0;
             count = 0;
             sample = 0;
-            textBoxKP.Text = textBoxKI.Text = textBoxKD.Text = String.Empty;
             textBoxAngle.Text = String.Empty;          
             textBoxSetPoint.Text = String.Empty;
             spulse = String.Empty;
