@@ -179,31 +179,6 @@ namespace PIDMotorControl
         }
         #endregion
 
-        #region Convert Float 
-        private unsafe void FloatToCharArray(char[] buff, float f)
-        {
-            var i = *((int*)&f);
-
-            var firtsByte = (i >> 24) & 0xFF;
-            var secondByte = (i >> 16) & 0xFF;
-            var thirdByte = (i >> 8) & 0xFF;
-            var fourthByte = (i) & 0xFF;
-            buff[0] = (char)firtsByte;
-            buff[1] = (char)secondByte;
-            buff[2] = (char)thirdByte;
-            buff[3] = (char)fourthByte;
-        }
-
-        private byte[] ConvertFloatToByteArray(float f)
-        {
-            byte[] ret = new byte[4];// a single float is 4 bytes/32 bits
-
-
-            ret = BitConverter.GetBytes(f);
-
-            return ret;
-        }
-        #endregion
 
         #region Button Click Events
 
@@ -408,7 +383,7 @@ namespace PIDMotorControl
                         t.Add(rtime);
                         pu.Add(pulses);
                     }
-                    // Khi đủ 100 mẫu:
+                    // Khi đủ 50 mẫu:
                     if (t.Count > 50)
                     {
                         check = true; // Dừng việc nạp buffer và bắt đầu vẽ đồ thị graph2
@@ -521,7 +496,7 @@ namespace PIDMotorControl
             zedGraphControl1.Refresh();
         }
 
-        // Vẽ đồ thị record 1sec
+        // Vẽ đồ thị record 0.5sec
         private void Draw_Record()
         {
             if (zedGraphControl2.GraphPane.CurveList.Count <= 0)
