@@ -265,8 +265,7 @@ namespace PIDMotorControl
         }
 
         private void buttonCP_Click(object sender, EventArgs e)
-        {
-            Com.DiscardInBuffer();
+        {           
             player.Play();
             ClearZedGraph2(); // Làm mới đồ thị graph2
             float.TryParse(textBoxSetPoint.Text, out sp);
@@ -276,6 +275,7 @@ namespace PIDMotorControl
 
             try
             {
+                Com.DiscardInBuffer();
                 Com.Write(s);
                 aTimer = new System.Windows.Forms.Timer();
                 aTimer.Tick += new EventHandler(aTimer_Tick);
