@@ -661,7 +661,6 @@ namespace PIDMotorControl
             change = false;
             check = false;
             listView1.Items.Clear();
-            aTimer1.Stop();
             t.DefaultIfEmpty();
             pu.DefaultIfEmpty();
         }
