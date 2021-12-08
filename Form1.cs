@@ -5,8 +5,6 @@ using System.Linq;
 using System.Windows.Forms;
 using System.IO.Ports;
 using ZedGraph;
-using System.Reflection;
-using System.IO;
 
 namespace PIDMotorControl
 {
@@ -17,12 +15,7 @@ namespace PIDMotorControl
         List<double> t = new List<double>();
         List<int> pu = new List<int>();
         private System.Windows.Forms.Timer aTimer;
-        System.Media.SoundPlayer player = new System.Media.SoundPlayer("C:\\Users\\QUOCVU\\Downloads\\click.wav");
 
-        byte[] temp = new byte[6];
-        byte[] value = new byte[4];
-
-        byte[] number = new byte[3];
         int m;
         float angle;
         float k;
@@ -60,9 +53,12 @@ namespace PIDMotorControl
             LineItem curve0 = new LineItem("SetPoint", list0, Color.Blue, SymbolType.None, 1.5f);
             graph1.CurveList.Add(curve);
             graph1.CurveList.Add(curve0);
+            graph1.XAxis.MajorGrid.IsVisible = true;
+            graph1.XAxis.MinorGrid.IsVisible = true;
+            graph1.YAxis.MajorGrid.IsVisible = true;
             graph1.XAxis.Scale.Min = 0;
             graph1.XAxis.Scale.Max = 50;
-            graph1.XAxis.Scale.MinorStep = 12.5;
+            graph1.XAxis.Scale.MinorStep = 5;
             graph1.XAxis.Scale.MajorStep = 25;
             graph1.YAxis.Scale.Min = 0;
             graph1.YAxis.Scale.Max = 130;
@@ -76,10 +72,13 @@ namespace PIDMotorControl
             RollingPointPairList list1 = new RollingPointPairList(60000);
             LineItem curve1 = new LineItem("Pusle", list1, Color.Green, SymbolType.None, 1.5f);
             graph2.CurveList.Add(curve1);
+            graph2.XAxis.MajorGrid.IsVisible = true;
+            graph2.XAxis.MinorGrid.IsVisible = true;
+            graph2.YAxis.MajorGrid.IsVisible = true;
             graph2.XAxis.Scale.Min = 0;
-            graph2.XAxis.Scale.Max = 0.4;
-            graph2.XAxis.Scale.MinorStep = 0.1;
-            graph2.XAxis.Scale.MajorStep = 0.2;
+            graph2.XAxis.Scale.Max = 0.5;
+            graph2.XAxis.Scale.MinorStep = 0.05;
+            graph2.XAxis.Scale.MajorStep = 0.25;
             graph2.YAxis.Scale.Min = 0;
             graph2.YAxis.Scale.Max = 130;
             graph2.AxisChange();
@@ -94,19 +93,6 @@ namespace PIDMotorControl
             comboBoxStopBit.Items.AddRange(stopbits);
         }
 
-        void saveFile()
-        {
-            Assembly Assemb = Assembly.GetExecutingAssembly();
-            Stream stream = Assemb.GetManifestResourceStream("click.wav");
-            FileStream fs = new FileStream("C:\\Users\\QUOCVU\\Downloads\\click.wav", FileMode.CreateNew);
-            BinaryReader br = new BinaryReader(stream);
-            byte[] save = new byte[stream.Length];
-            br.Read(save, 0, save.Length);
-            BinaryWriter bw = new BinaryWriter(fs);
-            bw.Write(save, 0, save.Length);
-            bw.Flush();
-            bw.Close();
-        }
 
         #region Setup UART Box
 
@@ -247,7 +233,6 @@ namespace PIDMotorControl
 
         private void buttonPID_Click(object sender, EventArgs e)
         {
-            player.Play();
             float.TryParse(textBoxKP.Text, out p);
             float.TryParse(textBoxKI.Text, out i);
             float.TryParse(textBoxKD.Text, out d);
@@ -266,7 +251,6 @@ namespace PIDMotorControl
 
         private void buttonCP_Click(object sender, EventArgs e)
         {           
-            player.Play();
             ClearZedGraph2(); // Làm mới đồ thị graph2
             float.TryParse(textBoxSetPoint.Text, out sp);
             string s = "S " + sp.ToString();           
@@ -278,7 +262,7 @@ namespace PIDMotorControl
                 Com.Write(s);
                 aTimer = new System.Windows.Forms.Timer();
                 aTimer.Tick += new EventHandler(aTimer_Tick);
-                aTimer.Interval = 10; // update graph2 mỗi 1ms
+                aTimer.Interval = 1; // update graph2 mỗi 10ms                
                 rtime = 0;
                 aTimer.Start();               
             }
@@ -297,6 +281,7 @@ namespace PIDMotorControl
                 try
                 {
                     m = 1;
+                    sp = 0;
                     string sM = "M " + m.ToString();
                     Com.Write(sM);
                 }
@@ -316,6 +301,7 @@ namespace PIDMotorControl
                 try
                 {
                     m = 4;
+                    sp = 0;
                     string sM = "M " + m.ToString();
                     Com.Write(sM);
                 }
@@ -359,14 +345,13 @@ namespace PIDMotorControl
                 }
             }
         }
+        
 
         #endregion    
 
         #region Push data from MCU to PC via UART
         private void OnCom(object sender, SerialDataReceivedEventArgs e)
-        {
-            //Control.CheckForIllegalCrossThreadCalls = false;
-            
+        {            
             spulse = Com.ReadLine();
 
             if (status == true)
@@ -383,7 +368,7 @@ namespace PIDMotorControl
                         t.Add(rtime);
                         pu.Add(pulses);
                     }
-                    // Khi đủ 400 mẫu:
+                    // Khi đủ 500 mẫu:
                     if (t.Count > 500)
                     {
                         check = true; // Dừng việc nạp buffer và bắt đầu vẽ đồ thị graph2
@@ -419,7 +404,7 @@ namespace PIDMotorControl
                             angle = angle - (int)k * 360;
                     }
 
-                    if(pulses >= 0)
+                    if (pulses >= 0)
                         textBoxAngle.Text = angle.ToString() + " Degrees";
                     else
                         textBoxAngle.Text = "-" + angle.ToString() + " Degrees";
@@ -490,6 +475,15 @@ namespace PIDMotorControl
                 yScale.Min = pulses - yScale.MajorStep;
             }
 
+            if (sp > yScale.Max - yScale.MajorStep)
+            {
+                yScale.Max = sp + yScale.MajorStep;
+            }
+            else if (sp < yScale.Min + yScale.MajorStep)
+            {
+                yScale.Min = sp - yScale.MajorStep;
+            }
+
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
             zedGraphControl1.Refresh();
@@ -544,6 +538,7 @@ namespace PIDMotorControl
                 change = false; // Chờ tín hiệu mới từ Setpoint
                 count = 0; // Reset index
                 check = false; // Bắt đầu nạp lại buffer khi nhận được xung 
+                aTimer.Stop();
             }
         }
 
@@ -590,9 +585,12 @@ namespace PIDMotorControl
             LineItem curve0 = new LineItem("SetPoint", list0, Color.Blue, SymbolType.None, 1.5f);
             graph1.CurveList.Add(curve);
             graph1.CurveList.Add(curve0);
+            graph1.XAxis.MajorGrid.IsVisible = true;
+            graph1.XAxis.MinorGrid.IsVisible = true;
+            graph1.YAxis.MajorGrid.IsVisible = true;
             graph1.XAxis.Scale.Min = 0;
             graph1.XAxis.Scale.Max = 50;
-            graph1.XAxis.Scale.MinorStep = 12.5;
+            graph1.XAxis.Scale.MinorStep = 5;
             graph1.XAxis.Scale.MajorStep = 25;
             graph1.YAxis.Scale.Min = 0;
             graph1.YAxis.Scale.Max = 130;
@@ -606,9 +604,12 @@ namespace PIDMotorControl
             RollingPointPairList list1 = new RollingPointPairList(60000);
             LineItem curve1 = new LineItem("Pusle", list1, Color.Green, SymbolType.None, 1.5f);
             graph2.CurveList.Add(curve1);
+            graph2.XAxis.MajorGrid.IsVisible = true;
+            graph2.XAxis.MinorGrid.IsVisible = true;
+            graph2.YAxis.MajorGrid.IsVisible = true;
             graph2.XAxis.Scale.Min = 0;
             graph2.XAxis.Scale.Max = 0.5;
-            graph2.XAxis.Scale.MinorStep = 0.125;
+            graph2.XAxis.Scale.MinorStep = 0.05;
             graph2.XAxis.Scale.MajorStep = 0.25;
             graph2.YAxis.Scale.Min = 0;
             graph2.YAxis.Scale.Max = 130;
@@ -631,9 +632,12 @@ namespace PIDMotorControl
             RollingPointPairList list1 = new RollingPointPairList(60000);
             LineItem curve1 = new LineItem("Pusle", list1, Color.Green, SymbolType.None, 1.5f);
             graph2.CurveList.Add(curve1);
+            graph2.XAxis.MajorGrid.IsVisible = true;
+            graph2.XAxis.MinorGrid.IsVisible = true;
+            graph2.YAxis.MajorGrid.IsVisible = true;
             graph2.XAxis.Scale.Min = 0;
             graph2.XAxis.Scale.Max = 0.5;
-            graph2.XAxis.Scale.MinorStep = 0.125;
+            graph2.XAxis.Scale.MinorStep = 0.05;
             graph2.XAxis.Scale.MajorStep = 0.25;
             graph2.YAxis.Scale.Min = 0;
             graph2.YAxis.Scale.Max = 130;
@@ -657,6 +661,7 @@ namespace PIDMotorControl
             change = false;
             check = false;
             listView1.Items.Clear();
+            aTimer1.Stop();
             t.DefaultIfEmpty();
             pu.DefaultIfEmpty();
         }

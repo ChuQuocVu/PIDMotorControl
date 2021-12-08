@@ -323,7 +323,7 @@
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.textBoxKP);
-            this.groupBox1.Location = new System.Drawing.Point(9, 340);
+            this.groupBox1.Location = new System.Drawing.Point(9, 352);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(294, 260);
             this.groupBox1.TabIndex = 30;
@@ -359,11 +359,11 @@
             // 
             // buttonSetPoint
             // 
-            this.buttonSetPoint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSetPoint.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.buttonSetPoint.BackColor = System.Drawing.Color.Blue;
             this.buttonSetPoint.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonSetPoint.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.buttonSetPoint.Location = new System.Drawing.Point(309, 515);
+            this.buttonSetPoint.Location = new System.Drawing.Point(309, 527);
             this.buttonSetPoint.Name = "buttonSetPoint";
             this.buttonSetPoint.Size = new System.Drawing.Size(250, 199);
             this.buttonSetPoint.TabIndex = 33;
@@ -376,7 +376,7 @@
             this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.groupBox4.Controls.Add(this.buttonCP);
             this.groupBox4.Controls.Add(this.textBoxSetPoint);
-            this.groupBox4.Location = new System.Drawing.Point(9, 606);
+            this.groupBox4.Location = new System.Drawing.Point(9, 618);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(294, 108);
             this.groupBox4.TabIndex = 34;
@@ -400,7 +400,8 @@
             // 
             // zedGraphControl1
             // 
-            this.zedGraphControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.zedGraphControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.zedGraphControl1.Location = new System.Drawing.Point(580, 12);
             this.zedGraphControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.zedGraphControl1.Name = "zedGraphControl1";
@@ -411,14 +412,14 @@
             this.zedGraphControl1.ScrollMinX = 0D;
             this.zedGraphControl1.ScrollMinY = 0D;
             this.zedGraphControl1.ScrollMinY2 = 0D;
-            this.zedGraphControl1.Size = new System.Drawing.Size(920, 357);
+            this.zedGraphControl1.Size = new System.Drawing.Size(920, 322);
             this.zedGraphControl1.TabIndex = 35;
             // 
             // zedGraphControl2
             // 
-            this.zedGraphControl2.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.zedGraphControl2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.zedGraphControl2.AutoSize = true;
-            this.zedGraphControl2.Location = new System.Drawing.Point(580, 378);
+            this.zedGraphControl2.Location = new System.Drawing.Point(744, 352);
             this.zedGraphControl2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.zedGraphControl2.Name = "zedGraphControl2";
             this.zedGraphControl2.ScrollGrace = 0D;
@@ -428,7 +429,7 @@
             this.zedGraphControl2.ScrollMinX = 0D;
             this.zedGraphControl2.ScrollMinY = 0D;
             this.zedGraphControl2.ScrollMinY2 = 0D;
-            this.zedGraphControl2.Size = new System.Drawing.Size(920, 336);
+            this.zedGraphControl2.Size = new System.Drawing.Size(620, 374);
             this.zedGraphControl2.TabIndex = 36;
             // 
             // listView1
@@ -492,7 +493,7 @@
             this.groupBox5.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.groupBox5.Controls.Add(this.radioButton4);
             this.groupBox5.Controls.Add(this.radioButton1);
-            this.groupBox5.Location = new System.Drawing.Point(309, 340);
+            this.groupBox5.Location = new System.Drawing.Point(309, 352);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(250, 148);
             this.groupBox5.TabIndex = 40;
@@ -515,7 +516,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.ClientSize = new System.Drawing.Size(1513, 736);
+            this.ClientSize = new System.Drawing.Size(1513, 760);
             this.Controls.Add(this.textBoxAngle);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.listView1);
